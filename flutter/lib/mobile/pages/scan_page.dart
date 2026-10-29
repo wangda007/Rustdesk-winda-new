@@ -153,6 +153,10 @@ class _ScanPageState extends State<ScanPage> {
       showToast('Invalid QR code');
       return;
     }
+    // 禁止通过扫码修改服务器配置
+    showToast('Invalid QR code');
+    return;
+    // ignore: dead_code
     try {
       final sc = ServerConfig.decode(data.substring(7));
       Timer(Duration(milliseconds: 60), () {

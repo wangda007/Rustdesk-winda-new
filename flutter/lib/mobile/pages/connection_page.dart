@@ -120,7 +120,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
   /// UI for software update.
   /// If _updateUrl] is not empty, shows a button to update the software.
   Widget _buildUpdateUI(String updateUrl) {
-    return updateUrl.isEmpty
+    // 关闭自动更新：不显示更新入口
+    return true || updateUrl.isEmpty
         ? const SizedBox(height: 0)
         : InkWell(
             onTap: () async {

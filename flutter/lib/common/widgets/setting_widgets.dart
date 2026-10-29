@@ -200,6 +200,9 @@ List<Widget> ServerConfigImportExportWidgets(
     showToast(translate('Export server configuration successfully'));
   }
 
+  // 隐藏服务器配置的导入/导出入口
+  return [];
+  // ignore: dead_code
   return [
     Tooltip(
       message: translate('Import server config'),

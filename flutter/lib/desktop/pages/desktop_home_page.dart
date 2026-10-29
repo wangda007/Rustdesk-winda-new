@@ -428,7 +428,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   }
 
   Widget buildHelpCards(String updateUrl) {
-    if (!bind.isCustomClient() &&
+    // 关闭自动更新：不显示更新提示
+    if (false &&
+        !bind.isCustomClient() &&
         updateUrl.isNotEmpty &&
         !isCardClosed &&
         bind.mainUriPrefixSync().contains('rustdesk')) {
@@ -467,6 +469,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           bind.mainGotoInstall();
         });
       } else if (bind.mainIsInstalledLowerVersion()) {
+        // 不显示提示更新的东西
+        return Container();
+        // ignore: dead_code
         return buildInstallCard(
             "Status", "Your installation is lower version.", "Click to upgrade",
             () async {

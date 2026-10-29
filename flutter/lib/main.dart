@@ -124,6 +124,16 @@ Future<void> initEnv(String appType) async {
   // for convenience, use global FFI on mobile platform
   // focus on multi-ffi on desktop first
   await initGlobalFFI();
+
+  // 设置写死的服务器配置
+  final hardcodedConfig = ServerConfig();
+  await bind.mainSetOption(
+      key: 'custom-rendezvous-server', value: hardcodedConfig.idServer);
+  await bind.mainSetOption(
+      key: 'relay-server', value: hardcodedConfig.relayServer);
+  await bind.mainSetOption(key: 'api-server', value: hardcodedConfig.apiServer);
+  await bind.mainSetOption(key: 'key', value: hardcodedConfig.key);
+
   // await Firebase.initializeApp();
   _registerEventHandler();
   // Update the system theme.

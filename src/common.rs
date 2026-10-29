@@ -1044,6 +1044,10 @@ pub fn is_modifier(evt: &KeyEvent) -> bool {
 }
 
 pub fn check_software_update() {
+    // 关闭自动更新检查
+    if true {
+        return;
+    }
     if is_custom_client() {
         return;
     }
@@ -1294,20 +1298,14 @@ fn get_api_server_(api: String, custom: String) -> String {
             return format!("http://{}", s);
         }
     }
-    "https://admin.rustdesk.com".to_owned()
+    //修改为自定义的API服务器,去除官方的  //"https://admin.rustdesk.com".to_owned()
+    hbb_common::global_config::GlobalServerConfig::API_SERVER.to_owned()
 }
 
+//更改是否为官方的API服务器的判断逻辑 直接返回true
 #[inline]
-pub fn is_public(url: &str) -> bool {
-    let parsed = url::Url::parse(url)
-        .ok()
-        .filter(|parsed| parsed.has_host())
-        .or_else(|| url::Url::parse(&format!("http://{url}")).ok());
-    let Some(host) = parsed.as_ref().and_then(url::Url::host_str) else {
-        return false;
-    };
-    let host = host.strip_suffix('.').unwrap_or(host);
-    host == "rustdesk.com" || host.ends_with(".rustdesk.com")
+pub fn is_public(_url: &str) -> bool {
+    true
 }
 
 pub fn get_tcp_punch_enabled() -> bool {
@@ -1345,9 +1343,8 @@ pub fn get_local_option(key: &str) -> String {
         || key == keys::OPTION_ENABLE_WEBRTC
     {
         if v.is_empty() {
-            if !is_public(&Config::get_rendezvous_server()) {
-                return "N".to_owned();
-            }
+            // 移除了对 is_public 的检查，直接返回默认的 "Y" 表示启用
+            return "Y".to_owned();
         }
     }
     if key == "lang" && (v == "pt" || v == "br") {
@@ -1358,7 +1355,8 @@ pub fn get_local_option(key: &str) -> String {
 
 pub fn get_audit_server(api: String, custom: String, typ: String) -> String {
     let url = get_api_server(api, custom);
-    if url.is_empty() || is_public(&url) {
+    //修改直接使用审计功能 不再判断服务器类型了  去除这个判断 || is_public(&url)
+    if url.is_empty() {
         return "".to_owned();
     }
     format!("{}/api/audit/{}", url, typ)
@@ -3238,6 +3236,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "is_public 已被自定义为始终返回 true"]
     fn test_is_public_matches_rustdesk_root_domain() {
         assert!(is_public("rustdesk.com/"));
         assert!(is_public("rustdesk.com:21117"));

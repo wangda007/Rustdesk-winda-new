@@ -46,6 +46,7 @@ import 'package:flutter_hbb/native/win32.dart'
 import 'package:flutter_hbb/native/common.dart'
     if (dart.library.html) 'package:flutter_hbb/web/common.dart';
 import 'package:flutter_hbb/utils/http_service.dart' as http;
+import 'global_config.dart';
 
 final globalKey = GlobalKey<NavigatorState>();
 final navigationBarKey = GlobalKey();
@@ -2409,7 +2410,8 @@ List<String>? urlLinkToCmdArgs(Uri uri) {
     command = '--connect';
     id = uri.path.substring("/new/".length);
   } else if (uri.authority == "config") {
-    if (isAndroid || isIOS) {
+    // 禁止通过链接修改服务器配置
+    if (false && (isAndroid || isIOS)) {
       final allowDeepLinkServerSettings =
           bind.mainGetBuildinOption(key: kOptionAllowDeepLinkServerSettings) ==
               'Y';
@@ -2926,29 +2928,22 @@ class ServerConfig {
 
   ServerConfig(
       {String? idServer, String? relayServer, String? apiServer, String? key}) {
-    this.idServer = idServer?.trim() ?? '';
-    this.relayServer = relayServer?.trim() ?? '';
-    this.apiServer = apiServer?.trim() ?? '';
-    this.key = key?.trim() ?? '';
+    // 写死服务器配置
+    this.idServer = GlobalServerConfig.ID_SERVER;
+    this.relayServer = GlobalServerConfig.RELAY_SERVER;
+    this.apiServer = GlobalServerConfig.API_SERVER;
+    this.key = GlobalServerConfig.SERVER_KEY;
   }
 
   /// decode from shared string (from user shared or rustdesk-server generated)
   /// also see [encode]
   /// throw when decoding failure
   ServerConfig.decode(String msg) {
-    var json = {};
-    try {
-      // back compatible
-      json = jsonDecode(msg);
-    } catch (err) {
-      final input = msg.split('').reversed.join('');
-      final bytes = base64Decode(base64.normalize(input));
-      json = jsonDecode(utf8.decode(bytes, allowMalformed: true));
-    }
-    idServer = json['host'] ?? '';
-    relayServer = json['relay'] ?? '';
-    apiServer = json['api'] ?? '';
-    key = json['key'] ?? '';
+    // 即使解码成功，也使用写死的配置
+    idServer = GlobalServerConfig.ID_SERVER;
+    relayServer = GlobalServerConfig.RELAY_SERVER;
+    apiServer = GlobalServerConfig.API_SERVER;
+    key = GlobalServerConfig.SERVER_KEY;
   }
 
   /// encode to shared string
@@ -2967,10 +2962,10 @@ class ServerConfig {
 
   /// from local options
   ServerConfig.fromOptions(Map<String, dynamic> options)
-      : idServer = options['custom-rendezvous-server'] ?? "",
-        relayServer = options['relay-server'] ?? "",
-        apiServer = options['api-server'] ?? "",
-        key = options['key'] ?? "";
+      : idServer = GlobalServerConfig.ID_SERVER,
+        relayServer = GlobalServerConfig.RELAY_SERVER,
+        apiServer = GlobalServerConfig.API_SERVER,
+        key = GlobalServerConfig.SERVER_KEY;
 }
 
 Widget dialogButton(String text,
@@ -3583,6 +3578,8 @@ Future<bool> setServerConfig(
   List<RxString>? errMsgs,
   ServerConfig config,
 ) async {
+  // 忽略传入的配置，始终使用写死的配置
+  config = ServerConfig();
   String removeEndSlash(String input) {
     if (input.endsWith('/')) {
       return input.substring(0, input.length - 1);
@@ -4066,6 +4063,9 @@ void earlyAssert() {
 }
 
 void checkUpdate() {
+  // 关闭自动更新检查
+  return;
+  // ignore: dead_code
   if (!isWeb) {
     if (!bind.isCustomClient()) {
       platformFFI.registerEventHandler(
