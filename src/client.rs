@@ -1002,7 +1002,7 @@ impl Client {
                     Some(rendezvous_message::Union::PunchHoleResponse(ph)) => {
                         if ph.socket_addr.is_empty() {
                             if !ph.other_failure.is_empty() {
-                                bail!(ph.other_failure);
+                                bail!(other_failure_to_chinese(&ph.other_failure));
                             }
                             match ph.failure.enum_value() {
                                 Ok(punch_hole_response::Failure::ID_NOT_EXIST) => {
@@ -5217,7 +5217,25 @@ pub fn check_if_retry(msgtype: &str, title: &str, text: &str, retry_for_relay: b
                 && !text.to_lowercase().contains("manually")
                 && !text.to_lowercase().contains("restricted")
                 && !text.to_lowercase().contains("incoming only")
-                && !text.to_lowercase().contains("not allowed")))
+                && !text.to_lowercase().contains("not allowed")
+                && !OTHER_FAILURE_ZH.iter().any(|(_, zh)| text.contains(zh))))
+}
+
+// 服务端下发的 other_failure 英文提示 -> 中文提示（小写英文关键字匹配）
+const OTHER_FAILURE_ZH: &[(&str, &str)] = &[
+    ("token expired", "登录已过期，请退出后重新登录！"),
+    ("token", "登录凭证无效，请退出后重新登录！"),
+    ("login", "连接失败，请先登录！"),
+    ("log in", "连接失败，请先登录！"),
+];
+
+fn other_failure_to_chinese(msg: &str) -> String {
+    let lower = msg.to_lowercase();
+    OTHER_FAILURE_ZH
+        .iter()
+        .find(|(en, _)| lower.contains(en))
+        .map(|(_, zh)| zh.to_string())
+        .unwrap_or_else(|| msg.to_owned())
 }
 
 #[cfg(test)]
