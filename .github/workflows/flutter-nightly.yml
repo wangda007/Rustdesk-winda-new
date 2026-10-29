@@ -1,9 +1,7 @@
 name: Flutter Nightly Build
 
 on:
-  schedule:
-    # schedule build every night
-    - cron: "0 0 * * *"
+  # 已去掉每日定时编译，只保留手动触发
   workflow_dispatch:
 
 jobs:
