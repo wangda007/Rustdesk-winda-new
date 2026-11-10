@@ -2343,6 +2343,12 @@ impl Connection {
                 }
             }
         }
+        // 连接授权后通知 Flutter 端最小化主窗口，不再出现连接管理窗口
+        #[cfg(all(feature = "flutter", target_os = "windows"))]
+        {
+            let event = json!({ "name": "minimize_window" }).to_string();
+            let _ = crate::flutter::push_global_event(crate::flutter::APP_TYPE_MAIN, event);
+        }
     }
 
     fn peer_keyboard_enabled(&self) -> bool {

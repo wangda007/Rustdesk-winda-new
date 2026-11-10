@@ -32,8 +32,7 @@ class SettingsPage extends StatefulWidget implements PageShape {
   final icon = Icon(Icons.settings);
 
   @override
-  // 隐藏扫码导入服务器配置入口
-  final List<Widget> appBarActions = [];
+  final appBarActions = bind.isDisableSettings() ? [] : [ScanButton()];
 
   @override
   State<SettingsPage> createState() => _SettingsState();
@@ -95,7 +94,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   var _buildDate = "";
   var _myId = "";
   var _autoDisconnectTimeout = "";
-  var _hideServer = true;
+  var _hideServer = false;
   var _hideProxy = false;
   var _hideNetwork = false;
   var _hideWebSocket = false;
@@ -137,8 +136,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         bind.mainGetOptionSync(key: kOptionAllowAutoDisconnect));
     _autoDisconnectTimeout =
         bind.mainGetOptionSync(key: kOptionAutoDisconnectTimeout);
-    // 隐藏 ID/中继服务器配置入口
-    _hideServer = true;
+    _hideServer =
+        bind.mainGetBuildinOption(key: kOptionHideServerSetting) == 'Y';
     _hideProxy = bind.mainGetBuildinOption(key: kOptionHideProxySetting) == 'Y';
     _hideNetwork =
         bind.mainGetBuildinOption(key: kOptionHideNetworkSetting) == 'Y';
