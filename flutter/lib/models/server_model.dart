@@ -149,6 +149,9 @@ class ServerModel with ChangeNotifier {
     }
     */
 
+    // 允许隐藏连接管理窗口---不再出现连接确认窗口
+    bind.mainSetOption(key: 'allow-hide-cm', value: 'Y');
+
     timerCallback() async {
       final connectionStatus =
           jsonDecode(await bind.mainGetConnectStatus()) as Map<String, dynamic>;

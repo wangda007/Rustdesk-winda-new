@@ -80,9 +80,7 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
 
     setupServerWidget() => Flexible(
           child: Offstage(
-            // 去除设置服务器的连接提示
-            offstage: true ||
-                !(!_svcStopped.value &&
+            offstage: !(!_svcStopped.value &&
                 stateGlobal.svcStatus.value == SvcStatus.ready &&
                 _svcIsUsingPublicServer.value),
             child: Row(

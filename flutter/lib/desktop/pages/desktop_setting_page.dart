@@ -1831,8 +1831,8 @@ class _NetworkState extends State<_Network> with AutomaticKeepAliveClientMixin {
   }
 
   Widget network(BuildContext context) {
-    // 隐藏 ID/中继服务器配置入口
-    final hideServer = true;
+    final hideServer =
+        bind.mainGetBuildinOption(key: kOptionHideServerSetting) == 'Y';
     final hideProxy =
         isWeb || bind.mainGetBuildinOption(key: kOptionHideProxySetting) == 'Y';
     final hideWebSocket = isWeb ||
