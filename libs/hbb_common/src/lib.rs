@@ -67,7 +67,6 @@ pub use stream::Stream;
 pub use whoami;
 pub mod tls;
 pub mod verifier;
-pub mod global_config;
 pub use async_recursion;
 #[cfg(target_os = "linux")]
 pub use users;
