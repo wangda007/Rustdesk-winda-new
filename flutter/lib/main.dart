@@ -337,6 +337,8 @@ hideCmWindow({bool isStartup = false}) async {
     windowManager.setOpacity(0);
     await windowManager.waitUntilReadyToShow(windowOptions, null);
     bind.mainHideDock();
+    // 隐藏后不再保留任务栏项，否则任务栏会留下一个空白（灰蒙蒙）的缩略图
+    await windowManager.setSkipTaskbar(true);
     await windowManager.minimize();
     await windowManager.hide();
     _isCmReadyToShow = true;
