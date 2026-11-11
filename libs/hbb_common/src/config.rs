@@ -2869,11 +2869,14 @@ fn is_option_can_save(
 
 #[inline]
 pub fn is_incoming_only() -> bool {
-    HARD_SETTINGS
-        .read()
-        .unwrap()
-        .get("conn-type")
-        .map_or(false, |x| x == ("incoming"))
+
+// 永远返回 true   一直是mini 版本
+    true
+//     HARD_SETTINGS
+//         .read()
+//         .unwrap()
+//         .get("conn-type")
+//         .map_or(false, |x| x == ("incoming"))
 }
 
 #[inline]
@@ -2901,7 +2904,8 @@ pub fn is_disable_tcp_listen() -> bool {
 
 #[inline]
 pub fn is_disable_settings() -> bool {
-    is_some_hard_opton("disable-settings")
+    true
+   // is_some_hard_opton("disable-settings")
 }
 
 #[inline]
