@@ -1389,6 +1389,11 @@ pub fn get_install_options() -> String {
 }
 
 pub fn get_silent_install_options(printer_override: Option<bool>) -> &'static str {
+    // 静默安装不创建桌面图标、不创建开始菜单快捷方式、也不安装打印机。
+    if true {
+        let _ = printer_override;
+        return "";
+    }
     if !is_win_10_or_greater() {
         return "desktopicon startmenu";
     }

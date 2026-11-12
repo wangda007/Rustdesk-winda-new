@@ -65,8 +65,6 @@ class _InstallPageBodyState extends State<_InstallPageBody>
   static const _printerStatusTimeout = Duration(seconds: 5);
 
   late final TextEditingController controller;
-  final RxBool startmenu = true.obs;
-  final RxBool desktopicon = true.obs;
   final RxBool printer = false.obs;
   final RxBool showProgress = false.obs;
   final RxBool btnEnabled = true.obs;
@@ -81,8 +79,6 @@ class _InstallPageBodyState extends State<_InstallPageBody>
   _InstallPageBodyState() {
     controller = TextEditingController(text: bind.installInstallPath());
     final installOptions = jsonDecode(bind.installInstallOptions());
-    startmenu.value = installOptions['STARTMENUSHORTCUTS'] != '0';
-    desktopicon.value = installOptions['DESKTOPSHORTCUTS'] != '0';
     printer.value = installOptions['PRINTER'] == '1';
   }
 
@@ -129,29 +125,6 @@ class _InstallPageBodyState extends State<_InstallPageBody>
     windowManager.close();
   }
 
-  InkWell Option(RxBool option, {String label = ''}) {
-    return InkWell(
-      // todo mouseCursor: "SystemMouseCursors.forbidden" or no cursor on btnEnabled == false
-      borderRadius: BorderRadius.circular(6),
-      onTap: () => btnEnabled.value ? option.value = !option.value : null,
-      child: Row(
-        children: [
-          Obx(
-            () => Checkbox(
-              visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-              value: option.value,
-              onChanged: (v) =>
-                  btnEnabled.value ? option.value = !option.value : null,
-            ).marginOnly(right: 8),
-          ),
-          Expanded(
-            child: Text(translate(label)),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final double em = 13;
@@ -187,11 +160,7 @@ class _InstallPageBodyState extends State<_InstallPageBody>
                   )
                 ],
               ).marginSymmetric(vertical: 2 * em),
-              Option(startmenu, label: 'Create start menu shortcuts')
-                  .marginOnly(bottom: 7),
-              Option(desktopicon, label: 'Create desktop icon')
-                  .marginOnly(bottom: 7),
-              Option(printer, label: 'Install {$appName} Printer'),
+              // 不创建开始菜单快捷方式、桌面图标，也不安装打印机：安装页面不提供这些选项
               Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -282,11 +251,8 @@ class _InstallPageBodyState extends State<_InstallPageBody>
       btnEnabled.value = false;
       cancelEnabled.value = false;
       showProgress.value = true;
-      String args = '';
-      if (startmenu.value) args += ' startmenu';
-      if (desktopicon.value) args += ' desktopicon';
-      if (printer.value) args += ' printer';
-      bind.installInstallMe(options: args, path: controller.text);
+      // 不创建快捷方式、也不安装打印机
+      bind.installInstallMe(options: '', path: controller.text);
     }
 
     do_install();

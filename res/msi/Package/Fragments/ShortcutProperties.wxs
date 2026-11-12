@@ -1,4 +1,4 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
 	<Fragment>
 
 		<?include ..\Includes.wxi?>
@@ -11,8 +11,8 @@
 				 install start menu shortcuts or the printer. Shortcut properties default to install;
 				 PRINTER defaults to not install. The CREATE* properties below update shortcut
 				 properties from command line, bundle, or registry values. -->
-		<Property Id="STARTMENUSHORTCUTS" Value="1" Secure="yes"></Property>
-		<Property Id="DESKTOPSHORTCUTS" Value="1" Secure="yes"></Property>
+		<Property Id="STARTMENUSHORTCUTS" Secure="yes"></Property> <!-- 本分支：快捷方式与打印机相关属性都不给默认值 "1"，安装时一律不创建快捷方式、不安装打印机（STARTUPSHORTCUTS 开机自启仍保留） -->
+		<Property Id="DESKTOPSHORTCUTS" Secure="yes"></Property>
 		<Property Id="STARTUPSHORTCUTS" Value="1" Secure="yes"></Property>
 		<Property Id="PRINTER" Secure="yes"></Property>
 
