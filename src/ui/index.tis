@@ -36,6 +36,9 @@ var using_public_server = handler.using_public_server();
 var software_update_url = "";
 var key_confirmed = tmp[1];
 var system_error = "";
+// Trial build notice, empty for the released version. Keep this file ASCII only:
+// res/inline-sciter.py reads it with the platform default encoding.
+var trial_notice = handler.get_builtin_option("trial-notice");
 
 const default_option_lang = is_custom_client ? 'default' : '';
 const default_option_yes = is_custom_client ? 'Y' : '';
@@ -733,6 +736,7 @@ class App: Reactor.Component
                     {is_can_screen_recording ? "": <CanScreenRecording />}
                     {is_can_screen_recording && !handler.is_process_trusted(false) ? <TrustMe /> : ""}
                     {!service_stopped && is_can_screen_recording && handler.is_process_trusted(false) && handler.is_installed() && !handler.is_installed_daemon(false) ? <InstallDaemon /> : ""}
+                    {trial_notice ? <TrialNotice /> : ""}
                     {system_error ? <SystemError /> : ""}
                     {!system_error && handler.is_login_wayland() && !handler.current_is_wayland() ? <FixWayland /> : ""}
                     {!system_error && handler.current_is_wayland() ? <ModifyDefaultLogin /> : ""}
@@ -867,6 +871,14 @@ class SystemError: Reactor.Component {
     function render() {
         return <div .install-me>
             <div>{system_error}</div>
+        </div>;
+    }
+}
+
+class TrialNotice: Reactor.Component {
+    function render() {
+        return <div .install-me>
+            <div>{trial_notice}</div>
         </div>;
     }
 }
