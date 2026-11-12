@@ -6,7 +6,7 @@ var install_path = "";
 
 class Install: Reactor.Component {
     function render() {
-        // 不创建开始菜单快捷方式、桌面图标，也不安装打印机：安装页面不提供这些选项
+        // No desktop icon, no start menu shortcuts, no printer: the page does not offer them.
         return <div .content>
             <div style="font-size: 2em;">{translate('Installation')}</div>
             <div style="margin: 2em 0;">{translate('Installation Path')} {": "}<input|text disabled value={view.install_path()} #path_input />

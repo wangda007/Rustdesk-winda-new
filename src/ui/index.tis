@@ -36,7 +36,8 @@ var using_public_server = handler.using_public_server();
 var software_update_url = "";
 var key_confirmed = tmp[1];
 var system_error = "";
-// 测试版有效期提示，正式版为空
+// Trial build notice, empty for the released version. Keep this file ASCII only:
+// res/inline-sciter.py reads it with the platform default encoding.
 var trial_notice = handler.get_builtin_option("trial-notice");
 
 const default_option_lang = is_custom_client ? 'default' : '';
