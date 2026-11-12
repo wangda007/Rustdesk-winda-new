@@ -736,6 +736,12 @@ impl Connection {
         }
 
         loop {
+            // 测试版：到期或同时连接数已满时结束会话，原因会显示给控制端。
+            if let Some(reason) = conn.trial_block_reason() {
+                conn.send_close_reason_no_retry(reason).await;
+                conn.on_close("test build", true).await;
+                break;
+            }
             tokio::select! {
                 // biased; // video has higher priority // causing test_delay_timer failed while transferring big file
 
@@ -2702,8 +2708,38 @@ impl Connection {
         false
     }
 
+    /// 测试版：已授权后，若已到期或同时存在的远程控制连接已满，则返回结束会话的原因。
+    #[inline]
+    fn trial_block_reason(&self) -> Option<&'static str> {
+        if !crate::trial::is_trial() || !self.authorized {
+            return None;
+        }
+        if crate::trial::expired() {
+            return Some(crate::trial::MSG_EXPIRED);
+        }
+        // 只有远程控制参与同时连接数限制。
+        if self.file_transfer.is_some() || self.view_camera || self.terminal || self.is_port_forward()
+        {
+            return None;
+        }
+        let others = AUTHED_CONNS
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|c| c.conn_type == AuthConnType::Remote && c.conn_id != self.inner.id)
+            .count();
+        if others >= crate::trial::MAX_REMOTE_CONNS {
+            return Some(crate::trial::MSG_TOO_MANY_CONNS);
+        }
+        None
+    }
+
     #[inline]
     pub fn is_permission_enabled_locally(enable_prefix_option: &str) -> bool {
+        // 测试版不开放文件传输与远程打印。
+        if crate::trial::option_disabled(enable_prefix_option) {
+            return false;
+        }
         #[cfg(feature = "flutter")]
         #[cfg(not(any(target_os = "android", target_os = "ios")))]
         {
@@ -2725,6 +2761,10 @@ impl Connection {
         control_permissions: &Option<ControlPermissions>,
     ) -> bool {
         use hbb_common::rendezvous_proto::control_permissions::Permission;
+        // 控制端可能明确要求开启，这里同样按测试版关掉。
+        if crate::trial::option_disabled(enable_prefix_option) {
+            return false;
+        }
         if let Some(control_permissions) = control_permissions {
             let permission = match enable_prefix_option {
                 keys::OPTION_ENABLE_KEYBOARD => Some(Permission::keyboard),

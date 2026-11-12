@@ -2681,6 +2681,12 @@ pub fn get_hwid() -> Bytes {
 
 #[inline]
 pub fn get_builtin_option(key: &str) -> String {
+    // 测试版信息：界面通过内置选项读取，避免新增接口；正式版 notice 为空，界面不显示。
+    match key {
+        "trial-notice" => return crate::trial::notice(),
+        "trial-days-left" => return crate::trial::days_left().to_string(),
+        _ => {}
+    }
     config::BUILTIN_SETTINGS
         .read()
         .unwrap()

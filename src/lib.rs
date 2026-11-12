@@ -50,6 +50,8 @@ mod clipboard;
 pub mod core_main;
 mod custom_server;
 mod lang;
+/// 测试版有效期与功能限制。
+mod trial;
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 mod port_forward;
 mod port_forward_mux;

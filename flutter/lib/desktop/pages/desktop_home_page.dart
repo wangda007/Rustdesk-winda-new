@@ -428,6 +428,11 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   }
 
   Widget buildHelpCards(String updateUrl) {
+    // 测试版：显示有效期提示，正式版这里为空、不显示
+    final trialNotice = bind.mainGetBuildinOption(key: 'trial-notice');
+    if (trialNotice.isNotEmpty) {
+      return buildInstallCard("", trialNotice, "", () {});
+    }
     // 关闭自动更新：不显示更新提示
     if (false &&
         !bind.isCustomClient() &&
